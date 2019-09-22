@@ -46,6 +46,9 @@ import org.xml.sax.SAXParseException;
  */
 public class XPathParser {
 
+  /**
+   * xml 的document对象
+   */
   private final Document document;
   private boolean validation;
   private EntityResolver entityResolver;
