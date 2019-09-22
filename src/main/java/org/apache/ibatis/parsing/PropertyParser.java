@@ -21,6 +21,10 @@ import java.util.Properties;
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
+
+/**
+ * 动态属性解析..
+ */
 public class PropertyParser {
 
   private static final String KEY_PREFIX = "org.apache.ibatis.parsing.PropertyParser.";
@@ -51,8 +55,11 @@ public class PropertyParser {
   }
 
   public static String parse(String string, Properties variables) {
+    // <2.1> 创建 VariableTokenHandler 对象
     VariableTokenHandler handler = new VariableTokenHandler(variables);
+    // <2.2> 创建 GenericTokenParser 对象
     GenericTokenParser parser = new GenericTokenParser("${", "}", handler);
+    // <2.3> 执行解析
     return parser.parse(string);
   }
 
@@ -75,13 +82,16 @@ public class PropertyParser {
     public String handleToken(String content) {
       if (variables != null) {
         String key = content;
+        // 开启默认值功能
         if (enableDefaultValue) {
+          // 查找默认值
           final int separatorIndex = content.indexOf(defaultValueSeparator);
           String defaultValue = null;
           if (separatorIndex >= 0) {
             key = content.substring(0, separatorIndex);
             defaultValue = content.substring(separatorIndex + defaultValueSeparator.length());
           }
+          // 有默认值，优先替换，不存在则返回默认值
           if (defaultValue != null) {
             return variables.getProperty(key, defaultValue);
           }
@@ -90,6 +100,7 @@ public class PropertyParser {
           return variables.getProperty(key);
         }
       }
+      // 无 variables ，直接返回
       return "${" + content + "}";
     }
   }
